@@ -24,17 +24,16 @@ impl FromStr for Person {
     fn from_str(s: &str) -> Result<Person, Self::Err> {
         if !s.is_empty() {
             let mut siter = s.split(',');
-            if let Some(name) = siter.next() {
-                if !name.is_empty() {
-                    if let Some(age) = siter.next() {
-                        if let Ok(age) = age.parse::<usize>() {
-                            return Ok(Self {
-                                name: name.into(),
-                                age,
-                            });
-                        }
-                    }
-                }
+            let name = siter.next().ok_or_else(|| "Bad Input".to_string())?;
+
+            if !name.is_empty() {
+                let age = siter.next().ok_or_else(|| "Bad Input".to_string())?;
+                let age = age.parse::<usize>().map_err(|_| "Bad Input".to_string())?;
+
+                return Ok(Self {
+                    name: name.into(),
+                    age,
+                });
             }
         }
 
